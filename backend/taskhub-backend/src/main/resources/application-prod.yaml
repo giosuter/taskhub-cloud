@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASS}
+  jpa:
+    hibernate.ddl-auto: validate
+    properties:
+      hibernate.dialect: org.hibernate.dialect.MariaDBDialect
+  flyway.enabled: true
+
+server:
+  port: 8080
+management.endpoints.web.exposure.include: health,info
