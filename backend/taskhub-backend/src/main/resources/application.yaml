@@ -1,29 +1,15 @@
-name: CI
-on:
-  push: { branches: [ "main" ] }
-  pull_request: { branches: [ "main" ] }
+server:
+  port: 8080
+  servlet:
+    context-path: /taskhub
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '21'
-      - name: Build & Unit Tests
-        run: mvn -B verify
-      # Optional: Run E2E/IT on main only (or nightly)
-      - name: Integration/E2E Tests
-        if: github.ref == 'refs/heads/main'
-        run: mvn -B verify -DskipITs=false
-      - name: Archive Surefire reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: surefire-reports
-          path: backend/target/surefire-reports			
+spring:
+  mvc:
+    problemdetails:
+      enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

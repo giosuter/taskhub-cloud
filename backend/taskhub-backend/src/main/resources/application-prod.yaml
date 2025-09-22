@@ -1,15 +1,21 @@
 spring:
+  application:
+    name: taskhub-backend
   datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
     url: ${DB_URL}
     username: ${DB_USER}
     password: ${DB_PASS}
   jpa:
-    hibernate.ddl-auto: validate
-    properties:
-      hibernate.dialect: org.hibernate.dialect.MariaDBDialect
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
   flyway:
     enabled: true
+    baseline-on-migrate: true
 
-server:
-  port: 8080
-management.endpoints.web.exposure.include: health,info
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
