@@ -29,7 +29,7 @@
       <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
 
-    <!-- Security (JWT later) -->
+    <!-- Security (permitAll for now, JWT later) -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-security</artifactId>
@@ -45,20 +45,26 @@
       <artifactId>spring-boot-starter-validation</artifactId>
     </dependency>
 
-    <!-- Database (MariaDB in prod; also works with MySQL) -->
+    <!-- Database: MariaDB/MySQL -->
     <dependency>
       <groupId>org.mariadb.jdbc</groupId>
       <artifactId>mariadb-java-client</artifactId>
       <scope>runtime</scope>
     </dependency>
 
-    <!-- Migrations -->
+    <!-- Flyway migrations -->
     <dependency>
       <groupId>org.flywaydb</groupId>
       <artifactId>flyway-core</artifactId>
     </dependency>
+    <!-- MySQL/MariaDB support module (needed for MariaDB 10.6 on Hostpoint) -->
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-mysql</artifactId>
+      <scope>runtime</scope>
+    </dependency>
 
-    <!-- OpenAPI UI at /swagger-ui -->
+    <!-- OpenAPI UI at /swagger-ui/index.html -->
     <dependency>
       <groupId>org.springdoc</groupId>
       <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
@@ -78,7 +84,7 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- Optional: Selenium smoke test for the frontend -->
+    <!-- Selenium smoke test for the frontend -->
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-java</artifactId>
@@ -91,13 +97,12 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- Optional for dev (no local DB install) -->
+    <!-- Optional: in-memory DB for local dev -->
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
       <scope>runtime</scope>
     </dependency>
-
   </dependencies>
 
   <build>
@@ -105,17 +110,13 @@
     <finalName>taskhub-backend</finalName>
 
     <plugins>
+      <!-- Spring Boot plugin to package fat JAR -->
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
-        <configuration>
-          <!-- Optional: image name if you ever use 'mvn spring-boot:build-image' -->
-          <image>
-            <name>ghcr.io/REPLACE_WITH_YOUR_GH_USER/taskhub-backend:${project.version}</name>
-          </image>
-        </configuration>
       </plugin>
 
+      <!-- Java compiler -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -123,58 +124,61 @@
           <release>${java.version}</release>
         </configuration>
       </plugin>
-      
+
+      <!-- Unit tests -->
       <plugin>
-  <groupId>org.apache.maven.plugins</groupId>
-  <artifactId>maven-surefire-plugin</artifactId>
-  
-  <configuration>
-    <!-- Unit tests: *Test, *Tests run by default -->
-    <includes>
-      <include>**/*Test.java</include>
-      <include>**/*Tests.java</include>
-    </includes>
-    <!-- Optional: faster feedback -->
-    <failIfNoTests>false</failIfNoTests>
-    <reuseForks>true</reuseForks>
-  </configuration>
-</plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <includes>
+            <include>**/*Test.java</include>
+            <include>**/*Tests.java</include>
+          </includes>
+          <failIfNoTests>false</failIfNoTests>
+          <reuseForks>true</reuseForks>
+        </configuration>
+      </plugin>
 
-<plugin>
-  <groupId>org.apache.maven.plugins</groupId>
-  <artifactId>maven-failsafe-plugin</artifactId>
-  <executions>
-    <execution>
-      <goals>
-        <goal>integration-test</goal>
-        <goal>verify</goal>
-      </goals>
-      <configuration>
-        <!-- Integration/E2E tests: *IT only when Failsafe is invoked -->
-        <includes>
-          <include>**/*IT.java</include>
-        </includes>
-        <skipITs>${skipITs}</skipITs>
-      </configuration>
-    </execution>
-  </executions>
-</plugin>
+      <!-- Integration tests -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+            <configuration>
+              <includes>
+                <include>**/*IT.java</include>
+              </includes>
+              <skipITs>${skipITs}</skipITs>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
 
-<plugin>
-  <groupId>org.jacoco</groupId>
-  <artifactId>jacoco-maven-plugin</artifactId>
-  <version>0.8.11</version>
-  <executions>
-    <execution>
-      <goals><goal>prepare-agent</goal></goals>
-    </execution>
-    <execution>
-      <id>report</id>
-      <phase>verify</phase>
-      <goals><goal>report</goal></goals>
-    </execution>
-  </executions>
-</plugin>
+      <!-- Code coverage -->
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.8.11</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>report</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 </project>
