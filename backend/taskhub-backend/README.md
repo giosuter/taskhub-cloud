@@ -14,6 +14,26 @@ curl -i http://localhost:8080/taskhub/actuator/health
 curl -i http://localhost:8080/taskhub/api/ping
 
 
+Browser checks
+--------------
+# 1) Swagger UI:
+http://localhost:8080/taskhub/swagger-ui.html
+(will redirect to /taskhub/swagger-ui/index.html)
+
+# 2) OpenAPI JSON:
+http://localhost:8080/taskhub/v3/api-docs
+
+# 3) Actuator health:
+http://localhost:8080/taskhub/actuator/health
+
+# 4) H2 Console (DEV only):
+http://localhost:8080/taskhub/h2-console
+
+# 5) JDBC URL: jdbc:h2:mem:taskhub
+User: sa
+Password: (empty)
+	
+
 ---------
 cd backend
 mvn clean verify
