@@ -1,14 +1,105 @@
+# ============================================================
+# TEST profile (unit/integration tests)
+# Activated automatically by @ActiveProfiles("test") or
+# with:  mvn -Dspring.profiles.active=test test
+#
+# Goals:
+#  - Use an isolated in-memory DB (H2) so CI/tests don't depend on MariaDB
+#  - Avoid Flyway errors during tests (disabled by default)
+#  - Keep /taskhub context-path so test URLs match dev/prod routing
+#  - Keep actuator health reachable for health-related tests
+# ============================================================
+
 server:
-  port: 0  # random
+  # 0 = random free port (safer for parallel test runs)
+  port: 0
+  servlet:
+    # Keep the same context path you use in dev/prod so MockMvc tests don't need special cases.
+    context-path: /taskhub
 
 spring:
+  application:
+    name: taskhub-backend
+
+  # ------------------------------------------
+  # Datasource (H2 in-memory, MySQL compatibility mode)
+  # ------------------------------------------
   datasource:
-    url: jdbc:h2:mem:taskhub;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
+    # In-memory database lives only for the lifetime of the JVM.
+    # MODE=MySQL gives better compatibility when your JPA/Hibernate mappings
+    # and queries are written with MariaDB/MySQL in mind.
+    url: jdbc:h2:mem:taskhub_test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=MySQL;DATABASE_TO_LOWER=TRUE
     driver-class-name: org.h2.Driver
     username: sa
     password:
+
+  # ------------------------------------------
+  # JPA/Hibernate for tests
+  # ------------------------------------------
   jpa:
+    # For tests we typically generate/tear down schema automatically.
+    # (Flyway is off by default in tests; see flyway.enabled below)
     hibernate:
       ddl-auto: create-drop
+    properties:
+      hibernate:
+        # Keep logs concise in test runs (flip to 'true' locally if debugging SQL)
+        format_sql: false
+        jdbc.time_zone: UTC
+    # Explicit dialect avoids warnings on H2
+    database-platform: org.hibernate.dialect.H2Dialect
+    open-in-view: false
+
+  # ------------------------------------------
+  # Flyway for tests
+  # ------------------------------------------
   flyway:
-    enabled: false
+    # Default: disable Flyway so tests don't require a real DB URL or Maria-specific SQL.
+    # To validate your migrations against H2 in CI, export TEST_FLYWAY_ENABLED=true
+    # and set jpa.hibernate.ddl-auto=validate here (or override via test-specific props).
+    enabled: ${TEST_FLYWAY_ENABLED:false}
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+  # Ensure legacy SQL init doesn't interfere with H2 + JPA schema in tests
+  sql:
+    init:
+      mode: never
+
+  # H2 console is unnecessary in automated tests
+  h2:
+    console:
+      enabled: false
+
+# ------------------------------------------
+# Actuator: expose health for health-related tests
+# ------------------------------------------
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      # Keep details minimal in CI logs; switch to 'always' if your test asserts details.
+      show-details: never
+
+# ------------------------------------------
+# Swagger / OpenAPI
+# ------------------------------------------
+# Keep the same paths as dev so any tests hitting these endpoints work consistently.
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+# ------------------------------------------
+# Logging for test runs
+# ------------------------------------------
+logging:
+  level:
+    # Keep ORM logs quiet by default; raise when needed during debugging
+    org.hibernate.SQL: warn
+    org.hibernate.orm.jdbc.bind: error
+    org.springframework.test: info

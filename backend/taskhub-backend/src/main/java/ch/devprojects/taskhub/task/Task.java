@@ -1,61 +1,122 @@
 package ch.devprojects.taskhub.task;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "tasks")
 public class Task {
-  @Id
-  @Column(name = "id", nullable = false, updatable = false, length = 36)
-  private String id = UUID.randomUUID().toString();
 
-  @NotBlank
-  @Size(max = 150)
-  @Column(name = "title", nullable = false, length = 150)
-  private String title;
+	@Id
+	@Column(length = 36, nullable = false, updatable = false)
+	private String id;
 
-  @Size(max = 4000)
-  @Column(name = "description", length = 4000)
-  private String description;
+	@Column(nullable = false)
+	private String title;
 
-  @Enumerated(EnumType.STRING)
-  @Column(name = "status", nullable = false, length = 20)
-  private TaskStatus status = TaskStatus.TODO;
+	@Column(columnDefinition = "text")
+	private String description;
 
-  @Column(name = "due_date")
-  private LocalDate dueDate;
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	private TaskStatus status;
 
-  @Column(name = "owner_id", nullable = false, length = 36)
-  private String ownerId;
+	@Column(name = "owner_id", nullable = false)
+	private String ownerId;
 
-  @Column(name = "created_at", nullable = false)
-  private OffsetDateTime createdAt = OffsetDateTime.now();
+	@Column(name = "created_at", nullable = false)
+	private LocalDateTime createdAt;
 
-  @Column(name = "updated_at", nullable = false)
-  private OffsetDateTime updatedAt = OffsetDateTime.now();
+	@Column(name = "updated_at", nullable = false)
+	private LocalDateTime updatedAt;
 
-  @PreUpdate
-  public void touch() { this.updatedAt = OffsetDateTime.now(); }
+	// IMPORTANT: Keep "due_date" to match Hibernate’s default naming (snake_case)
+	@Column(name = "due_date")
+	private LocalDateTime dueDate;
 
-  // getters/setters
-  public String getId() { return id; }
-  public String getTitle() { return title; }
-  public void setTitle(String title) { this.title = title; }
-  public String getDescription() { return description; }
-  public void setDescription(String description) { this.description = description; }
-  public TaskStatus getStatus() { return status; }
-  public void setStatus(TaskStatus status) { this.status = status; }
-  public LocalDate getDueDate() { return dueDate; }
-  public void setDueDate(LocalDate dueDate) { this.dueDate = dueDate; }
-  public String getOwnerId() { return ownerId; }
-  public void setOwnerId(String ownerId) { this.ownerId = ownerId; }
-  public OffsetDateTime getCreatedAt() { return createdAt; }
-  public void setCreatedAt(OffsetDateTime createdAt) { this.createdAt = createdAt; }
-  public OffsetDateTime getUpdatedAt() { return updatedAt; }
-  public void setUpdatedAt(OffsetDateTime updatedAt) { this.updatedAt = updatedAt; }
+	public Task() {
+		// JPA
+	}
+
+	@PrePersist
+	protected void onCreate() {
+		if (this.id == null)
+			this.id = UUID.randomUUID().toString();
+		LocalDateTime now = LocalDateTime.now();
+		this.createdAt = now;
+		this.updatedAt = now;
+		if (this.status == null)
+			this.status = TaskStatus.TODO;
+	}
+
+	@PreUpdate
+	protected void onUpdate() {
+		this.updatedAt = LocalDateTime.now();
+	}
+
+	// Getters & Setters (no Lombok)
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public TaskStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(TaskStatus status) {
+		this.status = status;
+	}
+
+	public String getOwnerId() {
+		return ownerId;
+	}
+
+	public void setOwnerId(String ownerId) {
+		this.ownerId = ownerId;
+	}
+
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public LocalDateTime getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setUpdatedAt(LocalDateTime updatedAt) {
+		this.updatedAt = updatedAt;
+	}
+
+	public LocalDateTime getDueDate() {
+		return dueDate;
+	}
+
+	public void setDueDate(LocalDateTime dueDate) {
+		this.dueDate = dueDate;
+	}
 }

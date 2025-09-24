@@ -1,0 +1,65 @@
+# ========================================================
+# DEV profile: local development
+# Run with: SPRING_PROFILES_ACTIVE=dev mvn spring-boot:run
+# ========================================================
+
+server:
+  port: 8080
+  servlet:
+    context-path: /taskhub   # All URLs are prefixed with /taskhub
+
+spring:
+  application:
+    name: taskhub-backend
+
+  datasource:
+    # In-memory H2 (NOT a filesystem path). MySQL mode helps Flyway scripts written for MariaDB/MySQL.
+    url: jdbc:h2:mem:taskhub;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=MySQL;DATABASE_TO_LOWER=TRUE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: validate          # Validate schema that Flyway creates
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc.time_zone: UTC
+    database-platform: org.hibernate.dialect.H2Dialect
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    clean-disabled: false         # Allow clean for local resets (NEVER enable in prod)
+    # Tip to force a clean start:
+    # mvn -Dspring.profiles.active=dev -Dflyway.cleanDisabled=false flyway:clean flyway:migrate
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console           # Open at: http://localhost:8080/taskhub/h2-console
+
+# Actuator: show details in dev to speed up debugging.
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+# OpenAPI / Swagger (SpringDoc 2.x)
+springdoc:
+  api-docs:
+    path: /v3/api-docs            # JSON:  http://localhost:8080/taskhub/v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html        # UI:    http://localhost:8080/taskhub/swagger-ui.html (redirects to /swagger-ui/index.html)
+
+# Helpful SQL logging locally (don’t enable in prod).
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.orm.jdbc.bind: trace

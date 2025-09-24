@@ -1,15 +1,46 @@
+# ==============================
+# Shared defaults (all profiles)
+# ==============================
 server:
   port: 8080
   servlet:
-    context-path: /taskhub
+    context-path: /taskhub    # Every URL (REST, Swagger, H2, static, actuator) is prefixed with /taskhub
 
 spring:
-  mvc:
-    problemdetails:
-      enabled: true
+  application:
+    name: taskhub-backend
 
+  # Never enable H2 console globally; do it per profile.
+  h2:
+    console:
+      enabled: false
+
+  # JPA defaults; Flyway owns the schema. Override per profile only if needed.
+  jpa:
+    open-in-view: false        # Safer for prod-style usage
+    hibernate:
+      ddl-auto: validate       # Do NOT auto-create tables; rely on Flyway
+
+  flyway:
+    enabled: true              # Migrations on by default
+    locations: classpath:db/migration
+    baseline-on-migrate: true  # Allows migrating an existing (non-empty) DB
+
+# Actuator surface kept minimal by default.
 management:
   endpoints:
     web:
       exposure:
         include: health,info
+  endpoint:
+    health:
+      show-details: never      # Valid values: never | when-authorized | always
+
+# OpenAPI / Swagger (Springdoc 2.x). Paths are app-relative (context-path is added automatically).
+springdoc:
+  api-docs:
+    path: /v3/api-docs         # JSON -> /taskhub/v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html     # UI -> /taskhub/swagger-ui.html (redirects to /taskhub/swagger-ui/index.html)
+    operationsSorter: method
+    tagsSorter: alpha

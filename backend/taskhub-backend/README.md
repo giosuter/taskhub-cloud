@@ -1,18 +1,17 @@
-localhost: 
-----------
+Quick smoke tests (terminal)
+----------------------------
 
-http://localhost:8080/api/ping
+# 1) OpenAPI JSON (expect: 200 + JSON)
+curl -i http://localhost:8080/taskhub/v3/api-docs
 
-Swagger:
-http://localhost:8080/swagger-ui/index.html
-or
-http://localhost:8080/swagger-ui.html
-or, with WebConfig.java:
-http://localhost:8080/swagger-ui
+# 2) Swagger UI entry (expect: 302 redirect to /taskhub/swagger-ui/index.html)
+curl -i http://localhost:8080/taskhub/swagger-ui.html
 
+# 3) Actuator health (expect: 200 {"status":"UP"})
+curl -i http://localhost:8080/taskhub/actuator/health
 
-raw spec (JSON):
-http://localhost:8080/v3/api-docs
+# 4) Ping (expect: 200 "pong")
+curl -i http://localhost:8080/taskhub/api/ping
 
 
 ---------
