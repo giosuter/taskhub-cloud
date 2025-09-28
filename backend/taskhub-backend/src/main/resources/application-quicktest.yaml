@@ -1,0 +1,33 @@
+spring:
+  config:
+    activate:
+      on-profile: quicktest
+  datasource:
+    url: jdbc:h2:file:./.local-db/taskhub_quicktest;MODE=MySQL;AUTO_SERVER=TRUE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+  flyway:
+    enabled: false
+  web:
+    resources:
+      static-locations:
+        - classpath:/static/
+        - file:target/site/
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: "always"
+
+logging:
+  level:
+    root: INFO
