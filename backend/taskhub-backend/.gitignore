@@ -1,33 +1,51 @@
-HELP.md
-target/
-.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+# ----------------------------------------------------
+# macOS / OS junk files / Consolidated .gitignore file
+# ----------------------------------------------------
+.DS_Store
+Thumbs.db
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
+# -----------------------------
+# Eclipse / STS (Spring Tool Suite)
+# -----------------------------
 .project
-.settings
+.classpath
+.settings/
 .springBeans
-.sts4-cache
 
-### IntelliJ IDEA ###
-.idea
-*.iws
+# -----------------------------
+# (Optional) IntelliJ / VS Code
+# Harmless to keep, ignore if project ever opened in those IDEs
+# -----------------------------
+.idea/
 *.iml
-*.ipr
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
-
-### VS Code ###
+out/
 .vscode/
+
+# -----------------------------
+# Maven / Build outputs
+# -----------------------------
+target/
+**/target/
+**/surefire-reports/
+**/failsafe-reports/
+
+# Logs
+logs/
+*.log
+
+# -----------------------------
+# JaCoCo coverage outputs
+# -----------------------------
+# Binary execution data
+jacoco.exec
+**/jacoco.exec
+**/*.exec
+
+# HTML report site
+site/
+**/site/
+**/site/**
+
+# Safety: never put generated reports under static
+src/main/resources/static/jacoco/
+src/main/resources/static/jacoco/**

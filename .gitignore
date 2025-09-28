@@ -1,29 +1,51 @@
-<<<<<<< HEAD
-# Compiled class file
-*.class
+# -----------------------------
+# macOS / OS
+# -----------------------------
+.DS_Store
+Thumbs.db
 
-# Log file
+# -----------------------------
+# Eclipse / STS
+# -----------------------------
+.project
+.classpath
+.settings/
+.springBeans
+
+# -----------------------------
+# IntelliJ / VS Code (optional)
+# -----------------------------
+.idea/
+*.iml
+out/
+.vscode/
+
+# -----------------------------
+# Backend (Maven / Spring Boot)
+# -----------------------------
+target/
+**/target/
+**/surefire-reports/
+**/failsafe-reports/
+logs/
 *.log
 
-# BlueJ files
-*.ctxt
+# JaCoCo coverage outputs
+jacoco.exec
+**/jacoco.exec
+**/*.exec
+site/
+**/site/
+**/site/**
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
+# Safety: never commit generated reports under static
+src/main/resources/static/jacoco/
+src/main/resources/static/jacoco/**
 
-# Package Files #
-*.jar
-*.war
-*.nar
-*.ear
-*.zip
-*.tar.gz
-*.rar
-
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-replay_pid*
-=======
-target/
-node_modules/
->>>>>>> 7f5e51e (chore: initial commit)
+# -----------------------------
+# Frontend (Angular, later)
+# -----------------------------
+frontend/node_modules/
+frontend/dist/
+**/node_modules/
+**/dist/

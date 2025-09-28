@@ -2,16 +2,16 @@ Quick smoke tests (terminal)
 ----------------------------
 
 # 1) OpenAPI JSON (expect: 200 + JSON)
-curl -i http://localhost:8080/taskhub/v3/api-docs
+curl -i http://localhost:8080/taskhub-cloud/v3/api-docs
 
 # 2) Swagger UI entry (expect: 302 redirect to /taskhub/swagger-ui/index.html)
-curl -i http://localhost:8080/taskhub/swagger-ui.html
+curl -i http://localhost:8080/taskhub-cloud/swagger-ui/index.html
 
 # 3) Actuator health (expect: 200 {"status":"UP"})
-curl -i http://localhost:8080/taskhub/actuator/health
+curl -i http://localhost:8080/taskhub-cloud/actuator/health
 
-# 4) Ping (expect: 200 "pong")
-curl -i http://localhost:8080/taskhub/api/ping
+# 4) Ping (expect: 200 "OK - PingController")
+curl -i http://localhost:8080/taskhub-cloud/api/ping
 
 
 Browser checks

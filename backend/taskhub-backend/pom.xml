@@ -1,64 +1,74 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-                             https://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
     <version>3.5.4</version>
-    <relativePath/> <!-- lookup parent from repository -->
+    <relativePath/>
   </parent>
 
   <groupId>ch.devprojects.taskhub</groupId>
   <artifactId>taskhub-backend</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>taskhub-backend</name>
-  <description>Taskhub backend</description>
+  <description>TaskHub Cloud backend (Spring Boot 3 / Java 21)</description>
   <packaging>jar</packaging>
 
   <properties>
     <java.version>21</java.version>
-    <maven.compiler.release>21</maven.compiler.release>
-
+    <maven.compiler.release>${java.version}</maven.compiler.release>
     <springdoc.version>2.6.0</springdoc.version>
-    <flyway.version>11.7.2</flyway.version>
-    <h2.version>2.3.232</h2.version>
-    <jacoco.version>0.8.12</jacoco.version>
-
-    <!-- keep builds reproducible -->
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <h2.version>2.2.224</h2.version>
+    <mariadb.version>3.4.1</mariadb.version>
+    <flyway.version>10.17.3</flyway.version>
   </properties>
 
   <dependencies>
-    <!-- Spring starters -->
+    <!-- Web / MVC -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-security</artifactId>
-    </dependency>
+
+    <!-- Validation -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-validation</artifactId>
     </dependency>
+
+    <!-- Data JPA -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-data-jpa</artifactId>
     </dependency>
+
+    <!-- Actuator -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-actuator</artifactId>
     </dependency>
 
-    <!-- Database: MariaDB for prod (default runtime) -->
+    <!-- OpenAPI / Swagger UI -->
+    <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+      <version>${springdoc.version}</version>
+    </dependency>
+
+    <!-- DB drivers -->
     <dependency>
       <groupId>org.mariadb.jdbc</groupId>
       <artifactId>mariadb-java-client</artifactId>
+      <version>${mariadb.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <version>${h2.version}</version>
       <scope>runtime</scope>
     </dependency>
 
@@ -69,13 +79,6 @@
       <version>${flyway.version}</version>
     </dependency>
 
-    <!-- Swagger / OpenAPI UI -->
-    <dependency>
-      <groupId>org.springdoc</groupId>
-      <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-      <version>${springdoc.version}</version>
-    </dependency>
-
     <!-- Test -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -83,121 +86,40 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.springframework.security</groupId>
-      <artifactId>spring-security-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <!-- H2 for tests (unit/integration). This is *test* scope globally. -->
-    <dependency>
-      <groupId>com.h2database</groupId>
-      <artifactId>h2</artifactId>
-      <version>${h2.version}</version>
-      <scope>runtime</scope>
-    </dependency>
+	  <groupId>org.springframework.boot</groupId>
+	  <artifactId>spring-boot-starter-security</artifactId>
+	</dependency>    
   </dependencies>
 
   <build>
     <plugins>
-      <!-- Spring Boot -->
+      <!-- Spring Boot repackage -->
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
-        <version>3.5.4</version>
+        <configuration>
+          <!-- Update to your real main class if different -->
+          <mainClass>ch.devprojects.taskhub.TaskhubBackendApplication</mainClass>
+        </configuration>
       </plugin>
 
-      <!-- Compiler -->
+      <!-- Java 21 compiler (release) -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.14.0</version>
+        <version>3.13.0</version>
         <configuration>
           <release>${maven.compiler.release}</release>
         </configuration>
       </plugin>
 
-      <!-- Unit tests -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.2.5</version>
-      </plugin>
-
-	    <!-- JaCoCo: attach agent for tests and generate HTML site -->
-	    <plugin>
-	      <groupId>org.jacoco</groupId>
-	      <artifactId>jacoco-maven-plugin</artifactId>
-	      <version>0.8.12</version>
-	      <executions>
-	        <!-- enable coverage during tests -->
-	        <execution>
-	          <id>prepare-agent</id>
-	          <goals>
-	            <goal>prepare-agent</goal>
-	          </goals>
-	        </execution>
-	
-	        <!-- generate HTML site BEFORE we package, so we can copy it into the jar -->
-	        <execution>
-	          <id>report-html</id>
-	          <phase>prepare-package</phase>
-	          <goals>
-	            <goal>report</goal>
-	          </goals>
-	        </execution>
-	      </executions>
-	    </plugin>
-
-	    <!-- Copy generated site into classpath: /static/jacoco/** -->
-	    <plugin>
-	      <artifactId>maven-resources-plugin</artifactId>
-	      <version>3.3.1</version>
-	      <executions>
-	        <execution>
-	          <id>copy-jacoco-site-into-static</id>
-	          <!-- run in the same phase, after jacoco:report (order = POM order) -->
-	          <phase>prepare-package</phase>
-	          <goals>
-	            <goal>copy-resources</goal>
-	          </goals>
-	          <configuration>
-	            <outputDirectory>${project.build.outputDirectory}/static/jacoco</outputDirectory>
-	            <resources>
-	              <resource>
-	                <directory>${project.build.directory}/site/jacoco</directory>
-	                <filtering>false</filtering>
-	              </resource>
-	            </resources>
-	          </configuration>
-	        </execution>
-	      </executions>
-	    </plugin>	    
-    
-      <!-- (Optional) Integration test phase if you later add ITs named *IT.java -->
-      <!--
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <version>3.2.5</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      -->
-
-      <!-- JaCoCo -->
+      <!-- JaCoCo coverage (report at target/site/jacoco) -->
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>${jacoco.version}</version>
+        <version>0.8.12</version>
         <executions>
           <execution>
-            <id>prepare-agent</id>
             <goals>
               <goal>prepare-agent</goal>
             </goals>
@@ -209,52 +131,15 @@
               <goal>report</goal>
             </goals>
           </execution>
-          <!-- If you want coverage checks to fail the build, enable this:
-          <execution>
-            <id>check</id>
-            <phase>verify</phase>
-            <goals><goal>check</goal></goals>
-            <configuration>
-              <rules>
-                <rule>
-                  <element>BUNDLE</element>
-                  <limits>
-                    <limit>
-                      <counter>LINE</counter>
-                      <value>COVEREDRATIO</value>
-                      <minimum>0.60</minimum>
-                    </limit>
-                  </limits>
-                </rule>
-              </rules>
-            </configuration>
-          </execution>
-          -->
         </executions>
       </plugin>
     </plugins>
   </build>
 
-  <!-- Profiles -->
   <profiles>
-    <!-- DEV profile: adds H2 at runtime so boot:run can use H2 + console -->
-    <profile>
-      <id>dev</id>
-      <dependencies>
-        <dependency>
-          <groupId>com.h2database</groupId>
-          <artifactId>h2</artifactId>
-          <version>${h2.version}</version>
-          <!-- no scope: available at runtime when dev profile is active -->
-        </dependency>
-      </dependencies>
-    </profile>
-
-    <!-- PROD profile: no H2; you can add prod-only tweaks here if needed -->
+    <!-- Runtime profiles are selected via SPRING_PROFILES_ACTIVE; no Maven switching needed -->
     <profile>
       <id>prod</id>
-      <!-- empty on purpose -->
     </profile>
   </profiles>
-
 </project>

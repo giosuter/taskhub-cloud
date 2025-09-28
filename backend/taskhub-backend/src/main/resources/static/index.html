@@ -2,44 +2,71 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Taskhub Backend</title>
+    <title>TaskHub Cloud — Backend Links</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
       :root { color-scheme: light dark; }
-      body { font-family: system-ui, Arial, sans-serif; margin: 2rem; line-height: 1.5; }
-      h1 { margin-bottom: 0.5rem; }
-      p { margin-top: 0; color: #666; }
+      body { font-family: system-ui, Arial, sans-serif; margin: 2rem; line-height: 1.55; }
+      h1 { margin-bottom: .25rem; }
+      p { margin: .25rem 0 1rem; color: #666; }
       ul { margin-top: 1rem; padding-left: 1.25rem; }
-      li { margin: 0.4rem 0; }
+      li { margin: .5rem 0; }
       a { text-decoration: none; }
       a:hover { text-decoration: underline; }
-      code { background: rgba(127,127,127,.15); padding: .1rem .3rem; border-radius: .25rem; }
+      code { background: color-mix(in srgb, CanvasText 10%, transparent); padding: .12rem .35rem; border-radius: .35rem; }
+      small { color: #777; }
+      .group { margin-top: 1.25rem; }
+      .sep { margin: 0 .4rem; opacity: .6; }
     </style>
   </head>
   <body>
-    <h1>Taskhub Backend</h1>
-    <p>Quick links (open in new tabs):</p>
-    <ul>
-      <li>
-        <a href="/taskhub/swagger-ui.html" target="_blank" rel="noopener noreferrer">Swagger UI</a>
-        <small> — interactive API docs</small>
-      </li>
-      <li>
-        <a href="/taskhub/v3/api-docs" target="_blank" rel="noopener noreferrer">OpenAPI JSON</a>
-        &nbsp;|&nbsp;
-        <a href="/taskhub/v3/api-docs.yaml" target="_blank" rel="noopener noreferrer">OpenAPI YAML</a>
-      </li>
-      <li>
-        <a href="/taskhub/h2-console" target="_blank" rel="noopener">H2 Console</a>
-        <small> — JDBC URL: <code>jdbc:h2:mem:taskhub</code></small>
-      </li>
-      <li>
-        <a href="/taskhub/actuator/health" target="_blank" rel="noopener noreferrer">Actuator Health</a>
-      </li>
-      <li>
-        <a href="/taskhub/jacoco/index.html" target="_blank" rel="noopener noreferrer">JaCoCo Coverage Report</a>
-        <small> — test coverage details</small>
-      </li>
-    </ul>
+    <h1>TaskHub Cloud — Backend</h1>
+    <p>
+      Quick links (work on <code>http://localhost:8080</code> and on
+      <code>https://devprojects.ch</code> thanks to the common context path
+      <code>/taskhub-cloud</code>).
+    </p>
+
+    <div class="group">
+      <h2>API &amp; Docs</h2>
+      <ul>
+        <li>
+          <a href="/taskhub-cloud/api/ping" target="_blank" rel="noopener noreferrer">Ping endpoint</a>
+          <small> — quick liveness check</small>
+        </li>
+        <li>
+          <a href="/taskhub-cloud/swagger-ui/index.html" target="_blank" rel="noopener noreferrer">Swagger UI</a>
+          <small> — interactive API docs</small>
+        </li>
+        <li>
+          <a href="/taskhub-cloud/v3/api-docs" target="_blank" rel="noopener noreferrer">OpenAPI JSON</a>
+          <span class="sep">|</span>
+          <a href="/taskhub-cloud/v3/api-docs.yaml" target="_blank" rel="noopener noreferrer">OpenAPI YAML</a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="group">
+      <h2>Actuator</h2>
+      <ul>
+        <li><a href="/taskhub-cloud/actuator/health" target="_blank" rel="noopener noreferrer">Health</a></li>
+        <li><a href="/taskhub-cloud/actuator/info" target="_blank" rel="noopener noreferrer">Info</a></li>
+        <li><a href="/taskhub-cloud/actuator" target="_blank" rel="noopener noreferrer">All endpoints (index)</a></li>
+      </ul>
+    </div>
+
+    <div class="group">
+      <h2>Dev Utilities</h2>
+      <ul>
+        <li>
+          <a href="/taskhub-cloud/h2-console" target="_blank" rel="noopener">H2 Console</a>
+          <small> — JDBC URL: <code>jdbc:h2:mem:taskhub_dev</code>, user: <code>sa</code>, no password</small>
+        </li>
+        <li>
+          <a href="/taskhub-cloud/jacoco/index.html" target="_blank" rel="noopener noreferrer">JaCoCo Coverage Report</a>
+          <small> — available after <code>mvn verify</code></small>
+        </li>
+      </ul>
+    </div>
   </body>
 </html>
