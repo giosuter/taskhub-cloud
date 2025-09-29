@@ -1,8 +1,9 @@
 package ch.devprojects.taskhub.task;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "tasks")
